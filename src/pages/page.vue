@@ -1,15 +1,7 @@
 <template>
   <div class="page">
-   <chat-header></chat-header> 
-   <chat-main></chat-main>
-   <div class="page__allpage">
-   <el-pagination
-  background
-  layout="prev, pager, next"
-  :total="200">
-</el-pagination>
-   </div>
-   
+    <chat-header></chat-header> 
+    <chat-main></chat-main>   
   </div>
 </template>
 <script>

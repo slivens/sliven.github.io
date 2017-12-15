@@ -1,33 +1,42 @@
 <template>
-<div class="answer">
+  <div class="answer">
     <ul>
-    <li v-for="(item,index) in answerdata">
-      <dl>
-        <dd class="answer__header--icon"><img :src="item.author.avatar_url"></dd>
-        <dd class="answer__header--tag" >问答</dd>
-        <dd class="answer__header--count">{{item.reply_count}}/{{item.visit_count}}</dd>
-        <dd class="answer__header--title"  ><router-link :to="{name:'contents',params:{id:item.id}}"> {{item.title}} </router-link></dd>
-        <dd class="answer__header--hours">2小时</dd>
-        <dd class="answer__header--smanswer"></dd>
-      </dl>
-    </li>
-  </ul>
-    </div>  
+      <li v-for="(item,index) in answerdata">
+        <dl>
+          <dd class="answer__header--icon"><img :src="item.author.avatar_url"></dd>
+          <dd class="answer__header--tag" >问答</dd>
+          <dd class="answer__header--count">{{item.reply_count}}/{{item.visit_count}}</dd>
+          <dd class="answer__header--title" ><router-link :to="{name:'contents',params:{id:item.id}}"> {{item.title}} </router-link></dd>
+          <dd class="answer__header--hours">2小时</dd>
+          <dd class="answer__header--smanswer"></dd>
+        </dl>
+      </li>
+    </ul>
+  </div>  
 </template>
 <script>
-import {showTab} from '../api/all'
+import { mapState } from 'vuex'
+import { showTab } from '../api/all'
 export default {
   data () {
     return {
       answerdata: ''
     }
   },
+  computed: {
+    ...mapState(['answerinfo'])
+  },
   mounted () {
     this.showTabdata()
   },
   methods: {
     async showTabdata () {
-      this.answerdata = await showTab(10, 20, 'ask')
+      if (this.answerinfo) {
+        this.answerdata = this.answerinfo
+      } else {
+        this.answerdata = await showTab(10, 20, 'ask')
+        this.$store.commit('saveAnswer', this.answerdata)
+      }
     }
   }
 }
@@ -36,7 +45,7 @@ export default {
 .answer,
 .answer ul {
   width: 100%;
-  background:#fff;
+  background: #fff;
 }
 .answer ul li {
   height: 50px;
@@ -74,7 +83,7 @@ export default {
   line-height: 30px;
   border-radius: 8px;
   font-size: 14px;
-  color:#fff;
+  color: #fff;
 }
 .answer ul li .answer__header--count {
   height: 50px;

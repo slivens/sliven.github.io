@@ -1,33 +1,43 @@
+
 <template>
-<div class="job">
+  <div class="job">
     <ul>
-    <li v-for="(item,index) in jobdata">
-      <dl>
-        <dd class="job__header--icon"><img :src="item.author.avatar_url"></dd>
-        <dd class="job__header--tag" >招聘</dd>
-        <dd class="job__header--count">{{item.reply_count}}/{{item.visit_count}}</dd>
-        <dd class="job__header--title"  ><router-link :to="{name:'contents',params:{id:item.id}}"> {{item.title}} </router-link></dd>
-        <dd class="job__header--hours">2小时</dd>
-        <dd class="job__header--smjob"></dd>
-      </dl>
-    </li>
-  </ul>
-    </div>  
+      <li v-for="(item,index) in jobdata">
+        <dl>
+          <dd class="job__header--icon"><img :src="item.author.avatar_url"></dd>
+          <dd class="job__header--tag" >招聘</dd>
+          <dd class="job__header--count">{{item.reply_count}}/{{item.visit_count}}</dd>
+          <dd class="job__header--title" ><router-link :to="{name:'contents',params:{id:item.id}}"> {{item.title}} </router-link></dd>
+          <dd class="job__header--hours">2小时</dd>
+          <dd class="job__header--smjob"></dd>
+        </dl>
+      </li>
+    </ul>
+  </div>  
 </template>
 <script>
-import {showTab} from '../api/all'
+import { mapState } from 'vuex'
+import { showTab } from '../api/all'
 export default {
   data () {
     return {
       jobdata: ''
     }
   },
+  computed: {
+    ...mapState(['jobinfo'])
+  },
   mounted () {
     this.showTabdata()
   },
   methods: {
     async showTabdata () {
-      this.jobdata = await showTab(10, 20, 'job')
+      if (this.jobinfo) {
+        this.jobdata = this.jobinfo
+      } else {
+        this.jobdata = await showTab(10, 20, 'job')
+        this.$store.commit('saveJob', this.jobdata)
+      }
     }
   }
 }
@@ -36,7 +46,7 @@ export default {
 .job,
 .job ul {
   width: 100%;
-  background:#fff;
+  background: #fff;
 }
 .job ul li {
   height: 50px;
@@ -70,11 +80,11 @@ export default {
   height: 30px;
   text-align: center;
   margin-top: 10px;
-  background:#c0c0c0;
+  background: #c0c0c0;
   line-height: 30px;
   border-radius: 8px;
   font-size: 14px;
-  color:#ffffff;
+  color: #ffffff;
 }
 .job ul li .job__header--count {
   height: 50px;

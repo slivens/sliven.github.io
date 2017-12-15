@@ -4,15 +4,32 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    id: ''
+    id: '',
+    allinfo: '',
+    answerinfo: '',
+    goodinfo: '',
+    shareinfo: '',
+    jobinfo: ''
   },
   getters: {
 
   },
   mutations: {
-    saveId (state, data) {
-      console.log('ididi', data)
-      state.id = data
+    saveAll (state, data) {
+      state.allinfo = data
+      console.log('allinfo', state.allinfo)
+    },
+    saveAnswer (state, data) {
+      state.answerinfo = data
+    },
+    saveGood (state, data) {
+      state.goodinfo = data
+    },
+    saveShare (state, data) {
+      state.shareinfo = data
+    },
+    saveJob (state, data) {
+      state.jobinfo = data
     }
   },
   actions: {

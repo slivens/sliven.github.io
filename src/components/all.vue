@@ -1,20 +1,26 @@
 <template>
-<div class="all">
-  <ul>
-    <li v-for="(item,index) in alldata">
-      <dl>
-        <dd class="all__header--icon"><img :src="item.author.avatar_url"></dd>
-        <dd class="all__header--tag" :class="showClassTab(item.tab)">{{showtab(item.tab)}}</dd>
-        <dd class="all__header--count">{{item.reply_count}}/{{item.visit_count}}</dd>
-        <dd class="all__header--title"  ><router-link :to="{name:'contents',params:{id:item.id}}"> {{item.title}} </router-link></dd>
-        <dd class="all__header--hours">2小时</dd>
-        <dd class="all__header--small"></dd>
-      </dl>
-    </li>
-  </ul>
-    </div>  
+  <div class="all">
+    <ul>
+       <Scroll :on-reach-bottom="handleReachBottom">
+      <Card dis-hover v-for="(item, index) in alldata" :key="index" >
+         <li>
+        <dl>
+          <dd class="all__header--icon"><img :src="item.author.avatar_url"></dd>
+          <dd class="all__header--tag" :class="showClassTab(item.tab)">{{showtab(item.tab)}}</dd>
+          <dd class="all__header--count">{{item.reply_count}}/{{item.visit_count}}</dd>
+          <dd class="all__header--title" ><router-link :to="{name:'contents',params:{id:item.id}}"> {{item.title}} </router-link></dd>
+          <dd class="all__header--hours">2小时</dd>
+          <dd class="all__header--small"></dd>
+        </dl>
+      </li>
+      </Card>
+    </Scroll>
+     
+    </ul>
+  </div>  
 </template>
 <script>
+import { mapState } from 'vuex'
 import { showall } from '../api/all'
 export default {
   data () {
@@ -23,15 +29,32 @@ export default {
       switchClass: true
     }
   },
+  computed: {
+    ...mapState(['allinfo'])
+  },
   mounted () {
     this.showData()
   },
   methods: {
-    async showData () {
-      this.alldata = await showall()
+    handleReachBottom () {
+      return new Promise(resolve => {
+        setTimeout(async () => {
+          console.log('___this', this)
+          let changepage = await showall()
+          changepage.forEach(item => {
+            this.alldata.push(item)
+          })
+          resolve()
+        }, 1000)
+      })
     },
-    showPersonInfo (id) {
-      this.$store.commit('saveId', id)
+    async showData () {
+      if (this.allinfo) {
+        this.alldata = this.allinfo
+      } else {
+        this.alldata = await showall()
+        this.$store.commit('saveAll', this.alldata)
+      }
     },
     showtab (tab) {
       if (tab === 'share') {
@@ -58,6 +81,12 @@ export default {
   }
 }
 </script>
+<style>
+.ivu-scroll-container {
+  height: 800px !important;
+}
+</style>
+
 <style scoped>
 .all,
 .all ul {
@@ -100,7 +129,7 @@ export default {
   line-height: 30px;
   border-radius: 8px;
   font-size: 14px;
-  color:#fff;
+  color: #fff;
 }
 .all ul li .all__header--count {
   height: 50px;
@@ -120,7 +149,7 @@ export default {
   width: 30px;
   height: 30px;
   margin-top: 10px;
-  background: red;
+  /* background: red; */
   float: right;
 }
 .job {
